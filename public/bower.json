@@ -1,0 +1,22 @@
+{
+  "name": "crux-client",
+  "version": "0.1.0",
+  "authors": [
+    "Justin Maxwell <a@aw2basc.com>"
+  ],
+  "description": "crux-client",
+  "main": "init.html",
+  "license": "MIT",
+  "homepage": "jmaxwell.net",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.0.3"
+  }
+}
