@@ -3,15 +3,18 @@ exports.index = function(req, res){
 };
 
 exports.mainTemplates = function(req, res){
-	var j = {};
-	res.render('main', function(err, html){
-		j.main = html;
-		res.render('site', function(err, html){
-			j.site = html;
-			res.render('pages', function(err, html){
-				j.pages = html;
-				res.send(JSON.stringify(j));
+	var j = {},
+		vws = ['main','site','pages','tags'],
+		i;
+	for(i=0;i<vws.length;i++){
+		(function(i){
+			res.render(vws[i],function(e,html){
+				j[vws[i]] = html;
+				if(++i === vws.length){
+					res.send(JSON.stringify(j));
+				}
 			});
-		});
-	});
+		})(i);
+	}
 };
+

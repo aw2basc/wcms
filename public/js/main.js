@@ -5,23 +5,15 @@ var PageModel = Backbone.Model.extend({
 	urlRoot:"/pages",
 	idAttribute: "_id",
 	defaults: {
-		"pageName" : "",
-		"pageUrl" : ""
+		"pageName" : "new",
+		"pageUrl" : "new",
+		"pageTags" : [{tagName:'header',tagValue:'header'},{tagName:'content',tagValue:'content'}]
 	}
 });
 
 var PageCollection = Backbone.Collection.extend({
 	url:"/pages",
 	model: PageModel
-});
-
-var SiteModel = Backbone.Model.extend({
-	urlRoot:"/sites",
-	idAttribute: "_id"
-});
-
-var MainModel = Backbone.Model.extend({
-	urlRoot:"/main/templates"
 });
 
 var AddPageView = Backbone.View.extend({
@@ -55,19 +47,51 @@ var PageView = Backbone.View.extend({
 	initialize:function(){
 		this.listenToOnce(this.model, 'change', this.render);
 		this.template = _.template(WCMS.mainModel.get('pages'));
+		this.tagsTemplate = _.template(WCMS.mainModel.get('tags'));
+		
+		this.tags = '';
 	},
 	events: {
 		"click .page-save": "save"
 	},
 	render:function(){
-		WCMS.pagesContainer.append(this.$el.html(this.template({pageName: this.model.get('pageName')})));
+		WCMS.pagesContainer.append(this.$el.html(
+			this.template({
+				pageName: this.model.get('pageName'),
+				pageId: this.model.get('_id'),
+				pageUrl: this.model.get('pageUrl'),
+				pageDate: ''
+			}) 
+		));
+		for(var i=0;i<this.model.attributes.pageTags.length;i++){
+			this.$el.find('.tags-list').append(
+				this.tagsTemplate({
+					tagName: this.model.attributes.pageTags[i].tagName,
+					tagValue: this.model.attributes.pageTags[i].tagValue
+				})
+			);
+		}
 	},
 	save: function(e){
 		e.preventDefault();
-		this.model.set('pageName', this.$('.pageName').val());
+		for(var i=0;i<this.model.attributes.pageTags.length;i++){
+			this.model.attributes.pageTags[i].tagName = _.escape($(this.$el.find('.tag-name')[i]).val());
+			this.model.attributes.pageTags[i].tagValue = _.escape($(this.$el.find('.tag-value')[i]).val());
+		}
+		this.model.set({
+			pageName:this.$el.find('.page-name').val(),
+			pageUrl:this.$el.find('.page-url').val()
+		});
+		console.log(this.model);
 		this.model.save();
-		console.log(this.model.get('pageName'));
 	}
+});
+
+
+// site
+var SiteModel = Backbone.Model.extend({
+	urlRoot:"/sites",
+	idAttribute: "_id"
 });
 
 var SiteView = Backbone.View.extend({
@@ -91,6 +115,12 @@ var SiteView = Backbone.View.extend({
 	}
 });
 
+
+// main
+var MainModel = Backbone.Model.extend({
+	urlRoot:"/main/templates"
+});
+
 var MainView = Backbone.View.extend({
 	initialize:function(){
 		this.listenTo(this.model, 'change', this.render);
@@ -101,12 +131,13 @@ var MainView = Backbone.View.extend({
 		WCMS.pagesContainer = $('.pages-container');
 
 		WCMS.siteModel = new SiteModel();
-		WCMS.siteModel.set({_id:"52ad17df936a7c0ea563be85"});
+		WCMS.siteModel.set({_id:"530176f4ec046f8773a77561"});
 		WCMS.siteView = new SiteView({model:WCMS.siteModel});
 		WCMS.siteModel.fetch();
 	}
 });
 
+// router
 var AppRouter = Backbone.Router.extend({
 	routes: {
 		"":"main"

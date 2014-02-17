@@ -1,4 +1,11 @@
 <form>
-	<input type="text" class="pageName" name="pageName" value="<%= pageName %>">
+	<p class="page-id"><%= pageId %></p>
+	<input type="text" class="page-name" name="pageName" value="<%= pageName %>">
+	<input type="text" class="page-url" name="pageUrl" value="<%= pageUrl %>">
+	<select class="page-template">
+		<option value="main">main</option>
+	</select>
+	<ul class="tags-list">
+	</ul>
 	<input class="page-save" type="submit" value="save">
 </form>

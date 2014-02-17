@@ -64,6 +64,25 @@ app.post('/pages', function(req,res){
 	});
 });
 
+//render
+var render = require('./app/render.js');
+app.get('/render/:id', function(req,res){
+	var renderData = {};
+	model.read('sites',req.params.id,function(data){
+		renderData = data;
+		for(var i=0;i<data.sitePages.length;i++){
+			(function(i,max){
+				model.read('pages', data.sitePages[i], function(pageData){
+					renderData.sitePages[i] = pageData;
+					if(i+1 === max){
+						render.create(renderData,res);
+					}
+				});
+			}(i,data.sitePages.length));
+		}
+	});
+});
+
 // passport
 passport.serializeUser(function(user, done) {
 	done(null, 1);

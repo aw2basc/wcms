@@ -27,7 +27,6 @@
   },
   "scripts": {
     "start": "node app.js",
-    "dev": "NODE_ENV=development node app.js",
     "test": "grunt nodeunit"
   },
   "dependencies": {
