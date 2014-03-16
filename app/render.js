@@ -8,8 +8,9 @@ exports.create = function(data,res){
 			(function(i){
 				fs.writeFile('./SITE/gbfumc/' + data.sitePages[i].pageName + '.html',
 					template({
-						header:_.unescape(data.sitePages[i].pageTags[0].tagValue),
-						content:_.unescape(data.sitePages[i].pageTags[1].tagValue)
+						pageName : data.sitePages[i].pageName,
+						header : _.unescape(data.sitePages[i].pageTags[0].tagValue),
+						content : _.unescape(data.sitePages[i].pageTags[1].tagValue)
 					}),
 					'utf-8',
 					function(e){
@@ -19,5 +20,6 @@ exports.create = function(data,res){
 				);
 			}(i));
 		}
+		console.log('rendering');
 	});
 };
