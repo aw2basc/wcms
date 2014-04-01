@@ -36,7 +36,8 @@
     "passport-google": "~0.3.0",
     "consolidate": "~0.10.0",
     "underscore": "~1.5.2",
-    "mustache": "~0.8.0"
+    "mustache": "~0.8.0",
+    "aws-sdk": "~2.0.0-rc13"
   },
   "devDependencies": {
     "grunt-contrib-jshint": "~0.6.4",
