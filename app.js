@@ -10,7 +10,15 @@ var http = require('http'),
 	cons = require('consolidate'),
 // passport
 	passport = require('passport'),
-	GoogleStrategy = require('passport-google').Strategy;
+	GoogleStrategy = require('passport-google').Strategy,
+// amazon
+	amazon = require('./app/amazon'),
+//render
+	render = require('./app/render.js'),
+// mongodb
+	mongo = require('./app/mongo.js');
+
+mongo.connect('mongodb://127.0.0.1:27017/wcms');
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -35,44 +43,40 @@ if ('development' === app.get('env')) {
 app.get('/', routes.index);
 app.get('/main/templates', routes.mainTemplates);
 
-var model = require('./model/model.js');
-model.connect('mongodb://127.0.0.1:27017/wcms');
-
 app.get('/sites/:id', function(req,res){
-	model.read('sites',req.params.id,function(data){
+	mongo.read('sites',req.params.id,function(data){
 		res.send(data);
 	});
 });
 app.put('/sites/:id', function(req,res){
-	model.update('sites', req.params.id, _.omit(req.body, '_id'), function(data){
+	mongo.update('sites', req.params.id, _.omit(req.body, '_id'), function(data){
 		res.send(data);
 	});
 });
 app.get('/pages/:id', function(req,res){
-	model.read('pages',req.params.id,function(data){
+	mongo.read('pages',req.params.id,function(data){
 		res.send(data);
 	});
 });
 app.put('/pages/:id', function(req,res){
-	model.update('pages', req.params.id, _.omit(req.body, '_id'), function(data){
+	mongo.update('pages', req.params.id, _.omit(req.body, '_id'), function(data){
 		res.send(data);
 	});
 });
 app.post('/pages', function(req,res){
-	model.insert('pages', req.body, function(data){
+	mongo.insert('pages', req.body, function(data){
 		res.send(data);
 	});
 });
 
-//render
-var render = require('./app/render.js');
+// render
 app.get('/render/:id', function(req,res){
 	var renderData = {};
-	model.read('sites',req.params.id,function(data){
+	mongo.read('sites',req.params.id,function(data){
 		renderData = data;
 		for(var i=0;i<data.sitePages.length;i++){
 			(function(i,max){
-				model.read('pages', data.sitePages[i], function(pageData){
+				mongo.read('pages', data.sitePages[i], function(pageData){
 					renderData.sitePages[i] = pageData;
 					if(i+1 === max){
 						render.create(renderData,res);
@@ -83,7 +87,14 @@ app.get('/render/:id', function(req,res){
 	});
 });
 
+// publish
+app.get('/publish', function(req,res){
+	amazon.uploadToS3('../SITE/gbfumc','test/');
+	res.send('');
+});
+	
 // passport
+/*
 passport.serializeUser(function(user, done) {
 	done(null, 1);
 });
@@ -102,8 +113,9 @@ passport.use(
 );
 app.get('/auth/google', passport.authenticate('google'));
 app.get('/auth/google/return', passport.authenticate('google', { successRedirect: '/home', failureRedirect: '/' }));
+*/
 
-// start
+// start server
 server.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });

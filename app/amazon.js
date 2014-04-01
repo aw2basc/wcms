@@ -4,7 +4,7 @@ var AWS = require('aws-sdk'),
 	fileFolder = require('./fileFolder'),
 	mimeTypes = require('./mimeTypes.json');
 	
-AWS.config.loadFromPath('../../awsConfig.json');
+AWS.config.loadFromPath('../awsConfig.json');
 var s3 = new AWS.S3();
 
 var mimeType = function(filePath){
@@ -16,17 +16,15 @@ var mimeType = function(filePath){
 	return type;
 };
 
-exports.uploadToS3 = function(localFldr,bcktFolder){
+var uploadToS3 = function(localFldr,bcktFolder){
 	var baseFolder = path.join(__dirname,localFldr),
 		baseKey = bcktFolder;
 
 	var onEachFile = function(fd){
 		fs.readFile(fd,function(err,data){
-			if(err) throw err;
-			//console.log(fd.split(baseFolder)[1]);
-			var newKey = path.join(baseKey,fd.split(baseFolder)[1]).replace(/\\/,'/'),
+			var newKey = path.join(baseKey,fd.split(baseFolder)[1]).replace(/\\/g,'/'),
 				mt = mimeType(newKey);
-			console.log(newKey);
+			if(err) throw err;
 			s3.putObject(
 				{
 					Bucket: 'jmaxwell.net',
@@ -36,11 +34,15 @@ exports.uploadToS3 = function(localFldr,bcktFolder){
 				},
 				function(err,data){
 					if(err) console.log(err, err.stack);
-					else console.log(data);
+					//else console.log(data);
 				}
 			);
 		});
 	};
 
 	fileFolder.recursive(baseFolder,onEachFile);
-}
+};
+
+exports.uploadToS3 = function(lcl,bckt){
+	uploadToS3(lcl,bckt);
+};
