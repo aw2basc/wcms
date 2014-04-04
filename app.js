@@ -89,7 +89,7 @@ app.get('/render/:id', function(req,res){
 
 // publish
 app.get('/publish', function(req,res){
-	amazon.uploadToS3('../SITE/gbfumc','test/');
+	amazon.uploadToS3('../SITE/gbfumc','');
 	res.send('');
 });
 	

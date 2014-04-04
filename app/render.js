@@ -1,7 +1,7 @@
 var fs = require('fs'),
 	_ = require('underscore');
 
-exports.create = function(data,res){
+var render = function(data,res){
 	fs.readFile('./SITE/gbfumc/template.html', 'utf-8', function(e,file){
 		var template = _.template(file);
 		for(var i=0;i<data.sitePages.length;i++){
@@ -22,4 +22,9 @@ exports.create = function(data,res){
 		}
 		console.log('rendering');
 	});
+};
+
+
+exports.create = function(data,res){
+	render(data,res);
 };

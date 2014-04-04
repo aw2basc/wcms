@@ -22,12 +22,14 @@ var uploadToS3 = function(localFldr,bcktFolder){
 
 	var onEachFile = function(fd){
 		fs.readFile(fd,function(err,data){
-			var newKey = path.join(baseKey,fd.split(baseFolder)[1]).replace(/\\/g,'/'),
+			//var newKey = path.join(baseKey,fd.split(baseFolder)[1]).replace(/\\/g,'/'),
+			var newKey = fd.split(baseFolder)[1].replace(/\\/g,'/').replace(/^/,'').substr(1),
 				mt = mimeType(newKey);
 			if(err) throw err;
+			console.log(newKey);
 			s3.putObject(
 				{
-					Bucket: 'jmaxwell.net',
+					Bucket: 'gbfumc.org',
 					Key: newKey,
 					Body: data,
 					ContentType: mt
